@@ -1,0 +1,30 @@
+{
+  "name": "flow-builder",
+  "version": "1.0.0",
+  "description": "define and execute tasks in a simple way",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/intesso/flow-builder.git"
+  },
+  "keywords": [
+    "async",
+    "flow",
+    "workflow",
+    "parallel",
+    "series"
+  ],
+  "author": "Andi Neck",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/intesso/flow-builder/issues"
+  },
+  "homepage": "https://github.com/intesso/flow-builder",
+  "dependencies": {
+    "async.js": "^0.9.2",
+    "inherits": "^2.0.1"
+  }
+}
