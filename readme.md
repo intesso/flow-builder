@@ -126,24 +126,35 @@ start the flow execution
 #### task
 
 called on every defined flow execution step (task)
+call the callback function when the task is done `callback()` or when an error occured `callback(err)`.
 
 arguments: `[args...,]` `callback`
- *  args arguments as they were defined with `series`, `parallel` or `eventually`.
- *  callback(err)
+ *  `args` arguments as they were defined with `series`, `parallel` or `eventually`.
+ *  `callback(err)`
 
 #### group
 
 called every time a defined group has finished
-when the callback(err) is called with a `truthy` err, the flow is stopped and `done` err is emited.
+call the callback function when the task is done `callback()` or when an error occured `callback(err)`.
+when the `callback(err)` is called with a `truthy` err, the flow is stopped and `done` err is emited.
 
-arguments:  err, group, callback
- *  err error
- *  group definition as array [name, [steps...]]
- *  callback(err)
+arguments:  `err`, `group`, `callback`
+ *  `err` error
+ *  `group` definition as array [name, [steps...]]
+ *  `callback(err)`
 
 #### done
 
 called at the very end of the flow execution (final callback)
 
-arguments: err
- *  err `truthy` when an error occured
+arguments: `err`
+ *  `err` `truthy` when an error occured
+
+
+# test
+```bash
+npm test
+```
+
+# license
+MIT
