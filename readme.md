@@ -141,7 +141,7 @@ when the `callback(err)` is called with a `truthy` err, the flow is stopped and 
 
 arguments:  `err`, `group`, `callback`
  *  `err` error
- *  `group` definition as array [name, [steps...]]
+ *  `group` definition as array [name, [steps...]] where steps are the defined arguments
  *  `callback(err)`
 
 #### done

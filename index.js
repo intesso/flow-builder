@@ -98,7 +98,7 @@ Flow.prototype.task = function(step, cb) {
   if (this.err) return;
 
   var args = ['task'];
-  args = args.concat(step[0]);
+  args = args.concat(step);
   args.push(cb);
   var listener = this.emit.apply(this, args);
   if (!listener) cb();
@@ -192,9 +192,9 @@ Flow.prototype.reset = function() {
 Flow.prototype.prepend = function(name, args) {
   var first = this.first(name);
   if (!first || !first.same) {
-    this.flow.unshift([name, [[args]]]);
+    this.flow.unshift([name, [args]]);
   } else {
-    first.steps.push([args]);
+    first.steps.push(args);
   }
   return this;
 };
@@ -202,9 +202,9 @@ Flow.prototype.prepend = function(name, args) {
 Flow.prototype.append = function(name, args) {
   var previous = this.previous(name);
   if (!previous || !previous.same) {
-    this.flow.push([name, [[args]]]);
+    this.flow.push([name, [args]]);
   } else {
-    previous.steps.push([args]);
+    previous.steps.push(args);
   }
   return this;
 };
