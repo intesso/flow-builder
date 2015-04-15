@@ -120,6 +120,8 @@ when the whole task flow has finished.
 
 #### exec()
 
+aliases: `execute`
+
 start the flow execution
 
 ## events

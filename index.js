@@ -82,6 +82,7 @@ Flow.prototype.exec = function() {
 
   return this;
 };
+Flow.prototype.execute = Flow.prototype.exec;
 
 /**
  * called on every defined flow execution step (task)
