@@ -130,4 +130,84 @@ test('flow glow', function(t) {
 });
 
 
+test('flow task error', function(t) {
+  t.plan(5);
+
+  var flow = new Flow();
+  // define flow
+  flow
+    .eventually('0a', task('0a'))
+    .parallel('1a', task('1a'))
+    .series('2a', task('2a'))
+  ;
+
+  // handle flow events
+  var results = {};
+  flow
+    .on('task', function(name, item, callback) {
+      item.doSmartThing(results, function(err, result) {
+        t.true(result);
+        if (result === '1a') return callback('1a error');
+        results[result] = result + ' DONE';
+        callback(err);
+      });
+    })
+    .on('group', function(err, group, callback) {
+      console.log('group finished', err, group);
+      t.true(!err || '1a error');
+      callback(err);
+    })
+    .on('done', function(err) {
+      t.true(err);
+      if (err) return console.log('failed');
+      console.log('all done', results);
+    });
+
+  // start flow
+  flow.exec();
+
+});
+
+
+test('flow group error', function(t) {
+  t.plan(6);
+
+  var flow = new Flow();
+  // define flow
+  flow
+    .eventually('0a', task('0a'))
+    .series('2a', task('2a'))
+    .series('2b', task('2b'))
+    .parallel('1a', task('1a'))
+
+  ;
+
+  // handle flow events
+  var results = {};
+  flow
+    .on('task', function(name, item, callback) {
+      item.doSmartThing(results, function(err, result) {
+        t.true(result);
+        if (result === '2b') return callback('2b error');
+        results[result] = result + ' DONE';
+        callback(err);
+      });
+    })
+    .on('group', function(err, group, callback) {
+      console.log('group finished', err, group);
+      t.true(!err || '2b error');
+      callback(err);
+    })
+    .on('done', function(err) {
+      t.true(err);
+      if (err) return console.log('failed');
+      console.log('all done', results);
+    });
+
+  // start flow
+  flow.exec();
+
+});
+
+
 
