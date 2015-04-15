@@ -128,8 +128,15 @@ Flow.prototype.group = function(err, group) {
   function evaluate(err) {
     if (err) return self.done(err);
     self.count++;
+    // call done
     if (self.count >= self.length) return self.done();
-    self.emit('next');
+
+    // call next
+    if (self.first('eventually').same) {
+      if ((self.count < self.length) && (group[0] !== 'eventually')) self.emit('next');
+    } else {
+      self.emit('next');
+    }
   }
 
 };
@@ -160,13 +167,14 @@ Flow.prototype.setup = function() {
   this.on('next', function next() {
     self.index++;
     var group = self.flow[self.index];
+    console.log('index', self.index, self.count);
     var name = group[0];
     var steps = group[1];
 
     async[asyncMap[name]](steps, self.task.bind(self), function callback(err) {
       self.group(err, group);
     });
-    if (name == 'eventually') next();
+    if (name == 'eventually') return next();
 
   });
 
@@ -183,7 +191,7 @@ Flow.prototype.reset = function() {
 
 Flow.prototype.prepend = function(name, args) {
   var first = this.first(name);
-  if (!first || first.same) {
+  if (!first || !first.same) {
     this.flow.unshift([name, [[args]]]);
   } else {
     first.steps.push([args]);

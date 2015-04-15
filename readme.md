@@ -71,7 +71,7 @@ function task(todo) {
 ```
 
 
-## flow definition methods
+## flow definition
 
 the flow is basically executed in the order the definition methods are called.
 
@@ -91,6 +91,7 @@ the only thing to consider is, that the arguments should be consistent in every 
 
 the methods return this and are chainable.
 
+### methods
 
 #### series([args..])
 
@@ -115,7 +116,7 @@ these tasks will be started immediately and evaluated only at the final callback
 when the whole task flow has finished.
 
 
-## flow execution
+## flow execution method
 
 #### exec()
 
