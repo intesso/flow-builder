@@ -7,6 +7,7 @@ var asyncMap = {
   parallel: 'each',
   sync: 'eachSeries',
   eachSync: 'eachSeries',
+  eachSeries: 'eachSeries',
   series: 'eachSeries',
   eventually: 'each',
   long: 'each'
@@ -85,34 +86,46 @@ Flow.prototype.exec = function() {
 /**
  * called on every defined flow execution step (task)
  *
- * emits 'task', args, callback
- * callback(err, done)
- *
- * @param cb(args, done)
+ * emits 'task', [args...,] callback
+ *  - args arguments as they were defined with `series`, `parallel` or `eventually`.
+ *  - callback(err)
+
+ * @param step
+ * @param cb(err)
  */
 Flow.prototype.task = function(step, cb) {
   var self = this;
+  if (this.err) return;
+
   var args = ['task'];
   args = args.concat(step[0]);
   args.push(cb);
   var listener = this.emit.apply(this, args);
   if (!listener) cb();
-
 };
 
 /**
  * called every time a defined group has finished
+ * when the callback(err) is called with a `truthy` err, the flow is stopped and `done` err is emited.
  *
- * @param cb(err, group, done)
+ * emits 'group', err, group, callback
+ *  - err error
+ *  - group definition as array [name, [steps...]]
+ *  - callback(err)
+ *
+ * @param err error
+ * @param group definition as array [name, [steps...]]
  */
 Flow.prototype.group = function(err, group) {
   var self = this;
+  if (this.err) return;
+
   var listener = this.emit('group', err, group, function(err) {
     evaluate(err);
   });
   if (!listener) evaluate(err);
 
-  function evaluate (err) {
+  function evaluate(err) {
     if (err) return self.done(err);
     self.count++;
     if (self.count >= self.length) return self.done();
@@ -124,11 +137,14 @@ Flow.prototype.group = function(err, group) {
 /**
  * called at the very end of the flow execution (final callback)
  *
- * @param cb(err)
+ * emits 'done', err
+ *  - err `truthy` when an error occured
+ *
+ * @param err `truthy` when an error occured
  */
 Flow.prototype.done = function(err) {
-  this.emit('done', err);
-  this.reset();
+  if (!this.err) this.emit('done', err);
+  if (err) this.err = true;
 };
 
 //////////////////////////////

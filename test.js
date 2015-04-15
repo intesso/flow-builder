@@ -1,7 +1,8 @@
+var test = require('tape');
 var Flow = require('./index');
 var flow = new Flow();
 
-
+// example task
 var projectHistory = [];
 function task(todo) {
   return {
@@ -12,14 +13,13 @@ function task(todo) {
   }
 }
 
-
 // define flow
 flow
-  .parallel('header', task('HEADER'))
-  .parallel('footer', task('FOOTER'))
-  .series('content', task('CONTENT'));
+  .parallel('header', task('ADD A HEADER'))
+  .parallel('footer', task('ADD A FOOTER'))
+  .series('content', task('ENTER CONTENT'));
 
-// handle
+// handle flow events
 var results = {};
 flow
   .on('task', function(name, item, callback) {
@@ -37,5 +37,6 @@ flow
     console.log('all done', results);
   });
 
+// start flow
 flow.exec();
 

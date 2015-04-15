@@ -3,16 +3,16 @@ var flow = new Flow();
 
 // define flow
 flow
-  .parallel('header', header)
-  .parallel('footer', footer)
-  .series('content', content);
+  .parallel('header', task('ADD A HEADER'))
+  .parallel('footer', task('ADD A FOOTER'))
+  .series('content', task('ENTER CONTENT'));
 
-// handle
+// handle flow events
 var results = {};
 flow
   .on('task', function(name, item, callback) {
     item.doSmartThing(results, function(err, result) {
-      results.name = result;
+      results[result] = result + ' :: DONE';
       callback(err);
     });
   })
@@ -25,5 +25,17 @@ flow
     console.log('all done', results);
   });
 
+// start flow
 flow.exec();
 
+
+// example task
+var projectHistory = [];
+function task(todo) {
+  return {
+    doSmartThing: function(list, callback) {
+      projectHistory.push(todo);
+      callback(null, todo);
+    }
+  }
+}
