@@ -1,6 +1,6 @@
 {
   "name": "flow-builder",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "define and execute tasks in a simple way",
   "main": "index.js",
   "scripts": {
