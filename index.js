@@ -84,17 +84,24 @@ Flow.prototype.exec = function() {
 };
 Flow.prototype.execute = Flow.prototype.exec;
 
-Flow.prototype.forEach = function (callback) {
+Flow.prototype.forEach = function(callback) {
   var self = this;
-  this.flow.forEach(function(group, groupIndex){
+  this.flow.forEach(function(group, groupIndex) {
     var groupName = group[0];
     var steps = group[1];
-    steps.forEach(function(args, stepIndex){
+    steps.forEach(function(args, stepIndex) {
       var arr = args.concat(stepIndex, groupName, groupIndex);
       callback.apply(callback, arr);
     })
   });
 };
+
+['task', 'group', 'done'].forEach(function(attribute) {
+  Flow.prototype[attribute] = function(fn) {
+    this[attribute + 'Callback'] = fn;
+    return this;
+  }
+});
 
 /**
  * called on every defined flow execution step (task)
@@ -106,15 +113,19 @@ Flow.prototype.forEach = function (callback) {
  * @param step
  * @param cb(err)
  */
-Flow.prototype.task = function(step, cb) {
+Flow.prototype._task = function(step, cb) {
   var self = this;
-  if (this.err) return;
+  if (this.finished) return;
 
   var args = ['task'];
-  args = args.concat(step);
-  args.push(cb);
-  var listener = this.emit.apply(this, args);
-  if (!listener) cb();
+  var emitArgs = args.concat(step);
+  emitArgs.push(cb);
+  var listener = this.emit.apply(this, emitArgs);
+  if (this.taskCallback) this.taskCallback.apply(this, step.concat(cb));
+  if (!listener && !this.taskCallback) {
+    debug('no user defined task function');
+    cb();
+  }
 };
 
 /**
@@ -129,20 +140,19 @@ Flow.prototype.task = function(step, cb) {
  * @param err error
  * @param group definition as array [name, [steps...]]
  */
-Flow.prototype.group = function(err, group) {
+Flow.prototype._group = function(err, group) {
   var self = this;
-  if (this.err) return;
+  if (this.finished) return;
 
-  var listener = this.emit('group', err, group, function(err) {
-    evaluate(err);
-  });
-  if (!listener) evaluate(err);
+  if (this.groupCallback) this.groupCallback(err, group, evaluate);
+  var listener = this.emit('group', err, group, evaluate);
+  if (!listener && !this.groupCallback) evaluate(err);
 
   function evaluate(err) {
-    if (err) return self.done(err);
+    if (err) return self._done(err);
     self.count++;
     // call done
-    if (self.count >= self.length) return self.done();
+    if (self.count >= self.length) return self._done();
 
     // call next
     if (self.first('eventually').same) {
@@ -162,9 +172,11 @@ Flow.prototype.group = function(err, group) {
  *
  * @param err `truthy` when an error occured
  */
-Flow.prototype.done = function(err) {
-  if (!this.err) this.emit('done', err);
-  if (err) this.err = true;
+Flow.prototype._done = function(err) {
+  if (this.finished) return;
+  if (this.doneCallback) this.doneCallback(err);
+  this.emit('done', err);
+  this.finished = true;this.finished = true;
 };
 
 //////////////////////////////
@@ -184,8 +196,8 @@ Flow.prototype.setup = function() {
     var name = group[0];
     var steps = group[1];
 
-    async[asyncMap[name]](steps, self.task.bind(self), function callback(err) {
-      self.group(err, group);
+    async[asyncMap[name]](steps, self._task.bind(self), function callback(err) {
+      self._group(err, group);
     });
     if (name == 'eventually') return next();
 

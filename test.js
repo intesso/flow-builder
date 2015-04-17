@@ -41,6 +41,40 @@ test('flow iteration with forEach', function(t) {
 
 });
 
+test('basic flow with callbacks', function(t) {
+  t.plan(6);
+
+  var flow = new Flow();
+  // define flow
+  flow
+    .parallel('header', task('ADD A HEADER'))
+    .parallel('footer', task('ADD A FOOTER'))
+    .series('content', task('ENTER CONTENT'))
+  ;
+
+  // handle flow events
+  var results = {};
+  flow
+    .task(function(name, item, callback) {
+      item.doSmartThing(results, function(err, result) {
+        results[result] = result + ' DONE';
+        t.true(result);
+        callback(err);
+      });
+    })
+    .group(function(err, group, callback) {
+      t.false(err);
+      callback(err);
+    })
+    .done(function(err) {
+      t.false(err);
+    });
+
+  // start flow
+  flow.exec();
+
+});
+
 test('basic flow', function(t) {
   t.plan(6);
 
@@ -63,14 +97,12 @@ test('basic flow', function(t) {
       });
     })
     .on('group', function(err, group, callback) {
-      console.log('group finished', group);
+      
       t.false(err);
       callback(err);
     })
     .on('done', function(err) {
       t.false(err);
-      if (err) return console.log('failed');
-      console.log('all done', results);
     });
 
   // start flow
@@ -102,14 +134,11 @@ test('extended flow', function(t) {
       });
     })
     .on('group', function(err, group, callback) {
-      console.log('group finished', group);
       t.false(err);
       callback(err);
     })
     .on('done', function(err) {
       t.false(err);
-      if (err) return console.log('failed');
-      console.log('all done', results);
     });
 
   // start flow
@@ -143,14 +172,11 @@ test('flow glow', function(t) {
       });
     })
     .on('group', function(err, group, callback) {
-      console.log('group finished', group);
       t.false(err);
       callback(err);
     })
     .on('done', function(err) {
       t.false(err);
-      if (err) return console.log('failed');
-      console.log('all done', results);
     });
 
   // start flow
@@ -188,8 +214,6 @@ test('flow task error', function(t) {
     })
     .on('done', function(err) {
       t.true(err);
-      if (err) return console.log('failed');
-      console.log('all done', results);
     });
 
   // start flow
@@ -229,8 +253,6 @@ test('flow group error', function(t) {
     })
     .on('done', function(err) {
       t.true(err);
-      if (err) return console.log('failed');
-      console.log('all done', results);
     });
 
   // start flow

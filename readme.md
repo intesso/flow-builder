@@ -39,17 +39,17 @@ flow
 // handle flow events
 var results = {};
 flow
-  .on('task', function(name, item, callback) {
+  .task(function(name, item, callback) {
     item.doSmartThing(results, function(err, result) {
       results[result] = result + ' DONE';
       callback(err);
     });
   })
-  .on('group', function(err, group, callback) {
+  .group(function(err, group, callback) {
     console.log('group finished', group);
     callback(err);
   })
-  .on('done', function(err) {
+  .done(function(err) {
     if (err) return console.log('failed');
     console.log('all done', results);
   });
