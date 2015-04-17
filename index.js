@@ -84,7 +84,7 @@ Flow.prototype.exec = function() {
 };
 Flow.prototype.execute = Flow.prototype.exec;
 
-Flow.prototype.forEach = function (callback) {
+Flow.prototype.iterate = function (callback) {
   var self = this;
   this.flow.forEach(function(group, groupIndex){
     var name = group[0];

@@ -12,7 +12,7 @@ function task(todo) {
   }
 }
 
-test('iterate over flow with forEach', function(t) {
+test('flow iterate', function(t) {
   t.plan(7);
 
   var flow = new Flow();
@@ -29,7 +29,7 @@ test('iterate over flow with forEach', function(t) {
 
   // handle flow events
   var results = {};
-  flow.forEach(function(name, task) {
+  flow.iterate(function(name, task) {
     t.true(typeof task.doSmartThing === 'function' && typeof name === 'string');
   });
 

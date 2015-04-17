@@ -124,7 +124,7 @@ aliases: `execute`
 
 start the flow execution
 
-#### forEach(callback)
+#### iterate(callback)
 
 iterates over the defined tasks.
 
