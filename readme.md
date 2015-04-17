@@ -124,6 +124,13 @@ aliases: `execute`
 
 start the flow execution
 
+#### forEach(callback)
+
+iterates over the defined tasks.
+
+`callback(args, stepIndex, groupName, groupIndex)`
+
+
 ## events
 
 #### task
