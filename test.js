@@ -12,6 +12,29 @@ function task(todo) {
   }
 }
 
+test('iterate over flow with forEach', function(t) {
+  t.plan(7);
+
+  var flow = new Flow();
+  // define flow
+  flow
+    .eventually('0a', task('0a'))
+    .parallel('1a', task('1a'))
+    .parallel('1b', task('1b'))
+    .series('2a', task('2a'))
+    .series('2b', task('2b'))
+    .parallel('3a', task('3a'))
+    .eventually('0b', task('0b'))
+  ;
+
+  // handle flow events
+  var results = {};
+  flow.forEach(function(name, task) {
+    t.true(typeof task.doSmartThing === 'function' && typeof name === 'string');
+  });
+
+});
+
 test('basic flow', function(t) {
   t.plan(6);
 

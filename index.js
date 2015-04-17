@@ -84,6 +84,18 @@ Flow.prototype.exec = function() {
 };
 Flow.prototype.execute = Flow.prototype.exec;
 
+Flow.prototype.forEach = function (callback) {
+  var self = this;
+  this.flow.forEach(function(group, groupIndex){
+    var name = group[0];
+    var steps = group[1];
+    steps.forEach(function(args, stepIndex){
+      args.push(stepIndex, group, groupIndex);
+      callback.apply(callback, args);
+    })
+  });
+};
+
 /**
  * called on every defined flow execution step (task)
  *
