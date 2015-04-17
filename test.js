@@ -12,7 +12,7 @@ function task(todo) {
   }
 }
 
-test('flow iterate', function(t) {
+test('flow iteration with forEach', function(t) {
   t.plan(7);
 
   var flow = new Flow();
@@ -29,8 +29,14 @@ test('flow iterate', function(t) {
 
   // handle flow events
   var results = {};
-  flow.iterate(function(name, task) {
-    t.true(typeof task.doSmartThing === 'function' && typeof name === 'string');
+  flow.forEach(function(name, task, stepIndex, groupName, groupIndex) {
+    t.true(
+      typeof task.doSmartThing === 'function' &&
+      typeof name === 'string' &&
+      typeof stepIndex === 'number' &&
+      typeof groupName === 'string' &&
+      typeof  groupIndex === 'number'
+    );
   });
 
 });
