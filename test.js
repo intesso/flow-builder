@@ -41,6 +41,63 @@ test('flow iteration with forEach', function(t) {
 
 });
 
+test('repeated flow', function(t) {
+  t.plan(12);
+
+
+  var flow = repeatedFlow = new Flow();
+  // define flow
+  flow
+    .parallel('header', task('ADD A HEADER'))
+    .parallel('footer', task('ADD A FOOTER'))
+    .series('content', task('ENTER CONTENT'))
+  ;
+
+  // handle flow events
+  var results = {};
+  flow
+    .task(function(name, item, callback) {
+      item.doSmartThing(results, function(err, result) {
+        results[result] = result + ' DONE';
+        t.true(result);
+        callback(err);
+      });
+    })
+    .group(function(err, group, callback) {
+      t.false(err);
+      callback(err);
+    })
+    .done(function(err) {
+      t.false(err);
+
+      // encore un fois
+      flow
+        .task(function(name, item, callback) {
+          item.doSmartThing(results, function(err, result) {
+            results[result] = result + ' DONE';
+            t.true(result);
+            callback(err);
+          });
+        })
+        .group(function(err, group, callback) {
+          t.false(err);
+          callback(err);
+        })
+        .done(function(err) {
+          t.false(err);
+        });
+
+      // start flow again, et voilà, comme il faut.
+      flow.exec();
+
+    });
+
+  // start flow
+  flow.exec();
+
+
+});
+
 test('basic flow with callbacks', function(t) {
   t.plan(6);
 

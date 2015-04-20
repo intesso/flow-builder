@@ -207,6 +207,7 @@ Flow.prototype.setup = function() {
 };
 
 Flow.prototype.reset = function() {
+  this.finished = false;
   this.index = -1;
   this.count = 0;
   this.length = this.flow.length;
