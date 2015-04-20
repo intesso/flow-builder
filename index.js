@@ -192,7 +192,6 @@ Flow.prototype.setup = function() {
   this.on('next', function next() {
     self.index++;
     var group = self.flow[self.index];
-    console.log('index', self.index, self.count);
     var name = group[0];
     var steps = group[1];
 
